@@ -4,13 +4,13 @@ include config.mk
 # Sub directories to build
 SRCDIRS		=	src
 #PLUGINSDIR	=	plugins
-#MODULESDIR      =       submodules
+#MODULESDIR	=	submodules
 
 SUBDIRS		=	$(SRCDIRS) $(PLUGINSDIR) $(MODULESDIR)
 
-MODULES         =       $(wildcard $(addsuffix /*.a,$(MODULESDIR)))
+MODULES		=	$(wildcard $(addsuffix /*.a,$(MODULESDIR)))
 
-.PHONY: all clean install debug
+.PHONY: all clean install-uart install-stlink debug
 .PHONY: $(SUBDIRS)
 
 all: $(HEXFILE) $(BINFILE)
@@ -18,11 +18,11 @@ all: $(HEXFILE) $(BINFILE)
 	@echo 
 
 $(BINFILE): $(ELFFILE)
-	@echo " [ BIN] $(BINFILE)"
+	@echo " [OBJC] $(BINFILE)"
 	@$(OBJCOPY) -O binary $< $@
 
 $(HEXFILE): $(ELFFILE)
-	@echo " [IHEX] $(HEXFILE)"
+	@echo " [OBJC] $(HEXFILE)"
 	@$(OBJCOPY) -O ihex $< $@
 
 $(ELFFILE): $(SUBDIRS)
@@ -38,14 +38,9 @@ clean: $(SUBDIRS)
 	@echo "Source tree cleaned."
 	@echo
 
-debug:
-	@echo " [DBUG] $(HEXFILE)"
-	@$(DEBUGCMD) $(DEBUGFLAGS) $(HEXFILE)
-
 install:
-	@echo " [INST] $(HEXFILE)"
-	@$(INSTALL) $(INSTALLFLAGS) $(BINFILE)
-	
+	@echo " [INST] $(NAME)"
+	@$(INSTALL-$(INSTALLER))
 
 $(SUBDIRS):
 	@echo " [ CD ] $(CURRENTPATH)$@/"

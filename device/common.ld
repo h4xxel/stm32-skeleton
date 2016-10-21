@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2010, Roel Verdult
- * Modified 2016, Axel Isaksson (Adapted for STM32F042x6)
+ * Modified 2016, Axel Isaksson (Adapted for STM32)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-MEMORY
-{
-	flash(rx): ORIGIN = 0x08000000, LENGTH = 32k
-	sram(rwx): ORIGIN = 0x20000000, LENGTH = 6k
-}
 
 sram_top = ORIGIN(sram) + LENGTH(sram);
 ENTRY(_start)
