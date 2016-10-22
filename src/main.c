@@ -5,6 +5,7 @@
 #include <stm32/rcc.h>
 #include <stm32/gpio.h>
 #include <stm32/usart.h>
+#include <stm32/i2c.h>
 
 void delay(volatile uint32_t i) {
 	for(; i > 0; i--);
