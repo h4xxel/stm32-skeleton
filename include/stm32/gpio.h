@@ -270,4 +270,7 @@ struct STM32GPIO {
 	STM32GPIOAltFuncHigh alt_func_high;
 };
 
+#include "_tools.h"
+#include _STRINGIZE(DEVICE/gpio.h)
+
 #endif

@@ -529,4 +529,8 @@ struct STM32RCC {
 	STM32RCCDedicatedClockConfig2 dck_cfgr2;
 };
 
+
+
+extern volatile STM32RCC RCC;
+
 #endif

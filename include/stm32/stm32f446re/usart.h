@@ -136,4 +136,13 @@ struct STM32USART {
 	STM32USARTGuardTimePrescaler guard_time_prescaler;
 };
 
+
+
+extern volatile STM32USART USART1;
+extern volatile STM32USART USART6;
+extern volatile STM32USART UART2;
+extern volatile STM32USART UART3;
+extern volatile STM32USART UART4;
+extern volatile STM32USART UART5;
+
 #endif
