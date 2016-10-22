@@ -4,6 +4,7 @@ MAKEFLAGS	+=	--no-print-directory
 # Tools
 AS		=	$(TARGET)as
 AR		=	$(TARGET)ar
+LD		=	$(TARGET)ld
 CC		=	$(TARGET)gcc
 CXX		=	$(TARGET)g++
 OBJCOPY		=	$(TARGET)objcopy

@@ -14,15 +14,16 @@ MODULES		=	$(wildcard $(addsuffix /*.a,$(MODULESDIR)))
 .PHONY: $(SUBDIRS)
 
 all: $(HEXFILE) $(BINFILE)
+	@echo 
 	@echo "Build complete."
 	@echo 
 
 $(BINFILE): $(ELFFILE)
-	@echo " [OBJC] $(BINFILE)"
+	@echo " [OCPY] $(BINFILE)"
 	@$(OBJCOPY) -O binary $< $@
 
 $(HEXFILE): $(ELFFILE)
-	@echo " [OBJC] $(HEXFILE)"
+	@echo " [OCPY] $(HEXFILE)"
 	@$(OBJCOPY) -O ihex $< $@
 
 $(ELFFILE): $(SUBDIRS)

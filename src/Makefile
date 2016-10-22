@@ -3,32 +3,36 @@ ifeq ($(shell readlink -f "$(TOPDIR)"),/)
 	$(error Could not find the project top directory with config.mk)
 endif
 include $(TOPDIR)/config.mk
+
+# Extra per-directory make configuration
 -include extra.mk
 
-# Files to build
-ASMFILES	=	$(wildcard *.S)
-SRCFILES	=	$(wildcard *.c)
-OBJFILES	=	$(SRCFILES:.c=.c.o)
-OBJFILES	+=	$(ASMFILES:.S=.S.o)
+# Find all source files automatically
+CFILES          = $(wildcard *.c)
+ASFILES         = $(wildcard *.S)
+SYMSFILES	= $(wildcard *.syms)
 
-OUTFILE		=	out.a
+# Object file names
+OBJFILES	= $(CFILES:.c=.c.o)
+OBJFILES	+=$(ASFILES:.S=.S.o)
+OBJFILES	+=$(SYMSFILES:.syms=.syms.o)
 
-# Flags
-CFLAGS		+=	
-ASFLAGS		+=	
-LDFLAGS		+=	
+OUTFILE		= out.a	
 
 # Sub directories to build
-SUBDIRS		=	$(foreach dir,$(wildcard */Makefile),$(dir $(dir)))
+SUBDIRS		= $(foreach dir,$(wildcard */Makefile),$(dir $(dir)))
 
-LIBS		=	$(addsuffix $(OUTFILE),$(SUBDIRS))
+LIBS		= $(addsuffix $(OUTFILE),$(SUBDIRS))
 
+# Hidden directory for dependency files
 DEPDIR = .deps
 df = $(DEPDIR)/$(*F)
 
 .PHONY: all clean
 .PHONY: $(SUBDIRS)
+.SUFFIXES:
 
+# Standard targets
 all: $(OUTFILE)
 	@echo
 
@@ -38,11 +42,13 @@ clean: $(SUBDIRS)
 	@$(RM) -R $(DEPDIR)
 	@echo 
 
+# Generate static library
 $(OUTFILE): $(OBJFILES) $(SUBDIRS)
 	@echo " [ AR ] $(CURRENTPATH)$(OUTFILE)"
 	@$(RM) $(OUTFILE)
 	@$(AR) -cqT $(OUTFILE) $(OBJFILES) $(LIBS)
 
+# Compile all subdirectories
 $(SUBDIRS):
 	@echo " [ CD ] $(CURRENTPATH)$@"
 	@+make -C "$@" "CURRENTPATH=$(CURRENTPATH)$@" $(MAKECMDGOALS)
@@ -51,15 +57,22 @@ $(SUBDIRS):
 $(DEPDIR):
 	@mkdir -p $@
 
+# Compile C files
 %.c.o: %.c | $(DEPDIR)
 	@echo " [ CC ] $(CURRENTPATH)$<"
 	@$(CC) -c $(CFLAGS) -MD -o $@ $<
 	@cp $*.c.d $(df).c.P; sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' -e '/^$$/ d' -e 's/$$/ :/' < $*.c.d >> $(df).c.P; $(RM) $*.c.d
-	
+
+# Compile ASM files with C pre-processor directives
 %.S.o: %.S | $(DEPDIR)
 	@echo " [ AS ] $(CURRENTPATH)$<"
 	@$(CC) -c $(ASFLAGS) -MD -o $@ $<
 	@cp $*.S.d $(df).S.P; sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' -e '/^$$/ d' -e 's/$$/ :/' < $*.S.d >> $(df).S.P; $(RM) $*.S.d
 
--include $(SRCFILES:%.c=$(DEPDIR)/%.c.P)
+# Link symbol lists to object files
+%.syms.o: %.syms
+	@$(LD) -o $@ -r --just-symbols=$<
+
+# Check dependencies
+-include $(CFILES:%.c=$(DEPDIR)/%.c.P)
 -include $(ASMFILES:%.S=$(DEPDIR)/%.S.P)
