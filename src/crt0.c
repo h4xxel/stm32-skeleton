@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <stm32/stm32f446/interrupts.h>
+#include <stm32/interrupts.h>
 #include <stm32/exceptions.h>
 
 int main();
