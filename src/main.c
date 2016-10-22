@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include <stm32/gpio.h>
+#include <stm32/usart.h>
 #include <stm32/rcc.h>
 
 #define RCC_BASE (0x40023800UL)

@@ -1,6 +1,3 @@
-#ifndef STRINGIZE
-#define STRINGIZE_AUX(a) #a
-#define STRINGIZE(a) STRINGIZE_AUX(a)
-#endif
+#include "_tools.h"
 
-#include STRINGIZE(DEVICE/rcc.h)
+#include _STRINGIZE(DEVICE/rcc.h)
