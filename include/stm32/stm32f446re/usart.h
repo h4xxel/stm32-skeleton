@@ -28,7 +28,7 @@ union STM32USARTData {
 	struct {
 		uint32_t dr : 9;
 		
-		uint32_t : 24;
+		uint32_t : 23;
 	};
 };
 
