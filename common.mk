@@ -12,6 +12,7 @@ OBJDUMP		=	$(TARGET)objdump
 
 INSTALL-UART	=	stm32loader -p $(TTYDEV) -e -w -v $(BINFILE)
 INSTALL-STLINK	=	st-flash --serial $(TTYDEV) --format ihex write $(HEXFILE)
+INSTALL-USB	=	dfu-util -a 0 -s 0x08000000 -D $(BINFILE)
 DEBUGCMD	=	st-util
 
 #Binaries

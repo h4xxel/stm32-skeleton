@@ -1,6 +1,6 @@
 MEMORY {
 	flash(rx): ORIGIN = 0x08000000, LENGTH = 32k
-	sram(rwx): ORIGIN = 0x20000000, LENGTH = 6k
+	sram(rwx): ORIGIN = 0x20000000, LENGTH = 2k
 }
 
 GPIOF = 0x48001400;

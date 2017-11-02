@@ -1,5 +1,5 @@
-#ifndef _STM32_STM32F044F6_RCC_H_
-#define _STM32_STM32F044F6_RCC_H_
+#ifndef _STM32_STM32F044P6_RCC_H_
+#define _STM32_STM32F044P6_RCC_H_
 
 #include <stdint.h>
 
@@ -83,11 +83,11 @@ union STM32RCCClockInterrupt {
 	};
 };
 
-typedef union STM32RCCAHBReset STM32RCCAHB1Reset;
-union STM32RCCAHB1Reset {
+typedef union STM32RCCAHBReset STM32RCCAHBReset;
+union STM32RCCAHBReset {
 	uint32_t reg;
 	struct {
-		uint32_t : 16;
+		uint32_t : 17;
 		
 		uint32_t gpio_a_rst : 1;
 		uint32_t gpio_b_rst : 1;
@@ -191,7 +191,7 @@ typedef union STM32RCCAHBEnable STM32RCCAHBEnable;
 union STM32RCCAHBEnable {
 	uint32_t reg;
 	struct {
-		uint32_t : 16;
+		uint32_t : 17;
 		
 		uint32_t gpio_a_en : 1;
 		uint32_t gpio_b_en : 1;
