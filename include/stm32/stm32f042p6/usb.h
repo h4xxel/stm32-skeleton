@@ -114,7 +114,7 @@ union STM32USBLPMControlStatus {
 		
 		uint32_t : 24;
 	};
-}
+};
 
 typedef union STM32USBBatteryChargingDetector STM32USBBatteryChargingDetector;
 union STM32USBBatteryChargingDetector {
@@ -133,7 +133,7 @@ union STM32USBBatteryChargingDetector {
 		
 		uint32_t : 16;
 	};
-}
+};
 
 typedef struct STM32USB STM32USB;
 struct STM32USB {
@@ -148,8 +148,20 @@ struct STM32USB {
 	STM32USBBatteryChargingDetector bcdr;
 };
 
+typedef struct STM32USBBufferDescriptor STM32USBBufferDescriptor;
+struct STM32USBBufferDescriptor {
+	uint16_t addr_tx;
+	uint16_t count_tx;
+	uint16_t addr_rx;
+	struct {
+		uint16_t count : 10;
+		uint16_t num_block : 5;
+		uint16_t blsize : 1;
+	} count_rx;
+};
 
 
-STM32SPI USB;
+extern volatile STM32USB USB;
+extern volatile uint8_t USB_BUFFER[1024];
 
 #endif
