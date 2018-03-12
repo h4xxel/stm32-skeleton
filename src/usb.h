@@ -150,6 +150,27 @@ struct UsbDescriptorEndpoint {
 	uint8_t interval;
 };
 
+typedef struct UsbDescriptorString UsbDescriptorString;
+struct UsbDescriptorString {
+	uint8_t length;
+	uint8_t descriptor_type;
+	uint16_t string[];
+};
+
+typedef union UsbDescriptor UsbDescriptor;
+union UsbDescriptor {
+	struct {
+		uint8_t length;
+		uint8_t descriptor_type;
+	} common;
+	
+	UsbDescriptorDevice device;
+	UsbDescriptorConfiguration configuration;
+	UsbDescriptorInterface interface;
+	UsbDescriptorEndpoint endpoint;
+	UsbDescriptorString string;
+};
+
 typedef enum UsbEndpointAttributeTransferType UsbEndpointAttributeTransferType;
 enum UsbEndpointAttributeTransferType {
 	USB_ENDPOINT_ATTRIBUTE_TRANSFER_TYPE_CONTROL,
@@ -171,14 +192,6 @@ enum UsbEndpointAttributeUsageType {
 	USB_ENDPOINT_ATTRIBUTE_USAGE_TYPE_DATA_ENDPOINT,
 	USB_ENDPOINT_ATTRIBUTE_USAGE_TYPE_FEEDBACK_ENDPOINT,
 	USB_ENDPOINT_ATTRIBUTE_USAGE_TYPE_IMPLICIT_FEEDBACK_DATA_ENDPOINT,
-};
-
-
-typedef struct UsbDescriptorString UsbDescriptorString;
-struct UsbDescriptorString {
-	uint8_t length;
-	uint8_t descriptor_type;
-	uint16_t string[];
 };
 
 #pragma pack(pop)
