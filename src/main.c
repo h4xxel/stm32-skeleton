@@ -4,6 +4,7 @@
 
 #include <stm32/rcc.h>
 #include <stm32/gpio.h>
+#include <stm32/can.h>
 
 #include "usb.h"
 
