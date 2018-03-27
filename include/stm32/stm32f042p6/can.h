@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-typedef union STM32CanMasterControl STM32MasterControl;
+typedef union STM32CanMasterControl STM32CanMasterControl;
 union STM32CanMasterControl {
 	uint32_t reg;
 	struct {
@@ -25,7 +25,7 @@ union STM32CanMasterControl {
 	};
 };
 
-typedef union STM32CanMasterStatus STM32MasterStatus;
+typedef union STM32CanMasterStatus STM32CanMasterStatus;
 union STM32CanMasterStatus {
 	uint32_t reg;
 	struct {
@@ -44,8 +44,8 @@ union STM32CanMasterStatus {
 	};
 };
 
-typedef union STM32CanTransmitStatus STM32TransmitStatus;
-union STM32TransmitStatus {
+typedef union STM32CanTxStatus STM32CanTxStatus;
+union STM32CanTxStatus {
 	uint32_t reg;
 	struct {
 		uint32_t rqcp0 : 1;
@@ -81,8 +81,8 @@ union STM32TransmitStatus {
 	};
 };
 
-typedef union STM32CanReceiveFifo STM32CanReceiveFifo;
-union STM32CanReceiveFifo {
+typedef union STM32CanRxFifo STM32CanRxFifo;
+union STM32CanRxFifo {
 	uint32_t reg;
 	struct {
 		uint32_t fmp : 2;
@@ -165,6 +165,111 @@ union STM32CanBitTiming {
 	};
 };
 
+typedef union STM32CanTxMboxIndentifier STM32CanTxMboxIndentifier;
+union STM32CanTxMboxIndentifier {
+	uint32_t reg;
+	struct {
+		uint32_t txrq : 1;
+		uint32_t rtr : 1;
+		uint32_t ide : 1;
+		uint32_t exid : 18;
+		uint32_t stid : 11;
+	};
+};
 
+typedef union STM32CanTxMboxDataLengthControlTimestamp STM32CanTxMboxDataLengthControlTimestamp;
+union STM32CanTxMboxDataLengthControlTimestamp {
+	uint32_t reg;
+	struct {
+		uint32_t dlc : 4;
+		uint32_t : 12;
+		uint32_t time : 16;
+	};
+};
+
+typedef union STM32CanMboxData STM32CanMboxData;
+union STM32CanMboxData {
+	uint32_t reg;
+	uint8_t data[4];
+};
+
+typedef union STM32CanRxFifoMboxIndentifier STM32CanRxFifoMboxIndentifier;
+union STM32CanRxFifoMboxIndentifier {
+	uint32_t reg;
+	struct {
+		uint32_t : 1;
+		uint32_t rtr : 1;
+		uint32_t ide : 1;
+		uint32_t exid : 18;
+		uint32_t stid : 11;
+	};
+};
+
+typedef union STM32CanRxMboxDataLengthControlTimestamp STM32CanRxMboxDataLengthControlTimestamp;
+union STM32CanRxMboxDataLengthControlTimestamp {
+	uint32_t reg;
+	struct {
+		uint32_t dlc : 4;
+		uint32_t : 4;
+		uint32_t fmi : 8;
+		uint32_t time : 16;
+	};
+};
+
+typedef union STM32CanFilterMaster STM32CanFilterMaster;
+union STM32CanFilterMaster {
+	uint32_t reg;
+	struct {
+		uint32_t finit : 1;
+		uint32_t : 7;
+		uint32_t can2sb : 6;
+		uint32_t : 18;
+	};
+};
+
+typedef struct STM32CAN STM32CAN;
+struct STM32CAN {
+	STM32CanMasterControl mcr;
+	STM32CanMasterStatus msr;
+	STM32CanTxStatus tsr;
+	STM32CanRxFifo rf[2];
+	STM32CanInterruptEnable ier;
+	STM32CanErrorStatus esr;
+	STM32CanBitTiming btr;
+	
+	uint32_t pad0[88];
+	
+	struct {
+		STM32CanTxMboxIndentifier tir;
+		STM32CanTxMboxDataLengthControlTimestamp tdtr;
+		STM32CanMboxData tdlr;
+		STM32CanMboxData tdhr;
+	} tx_mbox[3];
+	
+	struct {
+		STM32CanRxFifoMboxIndentifier rir;
+		STM32CanRxMboxDataLengthControlTimestamp rdtr;
+		STM32CanMboxData rdlr;
+		STM32CanMboxData rdhr;
+	} rx_mbox[2];
+	
+	uint32_t pad1[12];
+	
+	uint32_t fm1r;
+	uint32_t pad2;
+	uint32_t fs1r;
+	uint32_t pad3;
+	uint32_t ffa1r;
+	uint32_t pad4;
+	uint32_t fa1r;
+	uint32_t pad5;
+	
+	uint32_t pad6[7];
+	
+	struct {
+		uint32_t fr0;
+		uint32_t fr1;
+	} fifo[28];
+};
 
 #endif
