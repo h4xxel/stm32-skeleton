@@ -71,13 +71,9 @@ union STM32CanTxStatus {
 		
 		uint32_t code : 2;
 		
-		uint32_t tme0 : 1;
-		uint32_t tme1 : 1;
-		uint32_t tme2 : 1;
+		uint32_t tme : 3;
 		
-		uint32_t low0 : 1;
-		uint32_t low1 : 1;
-		uint32_t low2 : 1;
+		uint32_t low : 3;
 	};
 };
 
@@ -227,6 +223,24 @@ union STM32CanFilterMaster {
 	};
 };
 
+typedef struct STM32CanTxMbox STM32CanTxMbox;
+struct STM32CanTxMbox {
+	STM32CanTxMboxIndentifier tir;
+	STM32CanTxMboxDataLengthControlTimestamp tdtr;
+	//STM32CanMboxData tdlr;
+	//STM32CanMboxData tdhr;
+	uint8_t data[8];
+};
+
+typedef struct STM32CanRxMbox STM32CanRxMbox;
+struct STM32CanRxMbox {
+	STM32CanRxFifoMboxIndentifier rir;
+	STM32CanRxMboxDataLengthControlTimestamp rdtr;
+	//STM32CanMboxData rdlr;
+	//STM32CanMboxData rdhr;
+	uint8_t data[8];
+};
+
 typedef struct STM32CAN STM32CAN;
 struct STM32CAN {
 	STM32CanMasterControl mcr;
@@ -239,19 +253,8 @@ struct STM32CAN {
 	
 	uint32_t pad0[88];
 	
-	struct {
-		STM32CanTxMboxIndentifier tir;
-		STM32CanTxMboxDataLengthControlTimestamp tdtr;
-		STM32CanMboxData tdlr;
-		STM32CanMboxData tdhr;
-	} tx_mbox[3];
-	
-	struct {
-		STM32CanRxFifoMboxIndentifier rir;
-		STM32CanRxMboxDataLengthControlTimestamp rdtr;
-		STM32CanMboxData rdlr;
-		STM32CanMboxData rdhr;
-	} rx_mbox[2];
+	STM32CanTxMbox tx_mbox[3];
+	STM32CanRxMbox rx_mbox[2];
 	
 	uint32_t pad1[12];
 	
@@ -271,5 +274,7 @@ struct STM32CAN {
 		uint32_t fr1;
 	} fifo[28];
 };
+
+extern volatile STM32CAN CAN;
 
 #endif
