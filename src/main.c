@@ -14,8 +14,8 @@ void delay(volatile uint32_t i) {
 
 void setup_clock() {
 	/* Set up internal 48 MHz as system and peripheral clock */
-	RCC.cr2.hsi48_on = true;
-	while(!RCC.cr2.hsi48_rdy);
+	RCC.cr2.hsi_48_on = true;
+	while(!RCC.cr2.hsi_48_rdy);
 	
 	RCC.cfgr.sw = 0x3;
 	while(RCC.cfgr.sw != 0x3);
