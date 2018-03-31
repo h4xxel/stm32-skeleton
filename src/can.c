@@ -31,6 +31,10 @@ void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
 	GPIOA.output_type.pin11 = STM32_GPIO_OUTPUT_TYPE_PUSH_PULL;
 	GPIOA.output_type.pin12 = STM32_GPIO_OUTPUT_TYPE_PUSH_PULL;
 	
+	/* Reset CAN peripheral */
+	CAN.mcr.reset = true;
+	while(CAN.mcr.reset);
+	
 	/* Set init mode */
 	CAN.mcr.inrq = true;
 	CAN.mcr.sleep = false;
@@ -50,10 +54,10 @@ void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
 	CAN.btr.ts2 = ts2;
 	CAN.btr.brp = baud_rate_prescale;
 	CAN.btr.sjw = 2;
-}
-
-void can_initialize() {
 	
+	/* Set normal mode */
+	CAN.mcr.inrq = true;
+	while(CAN.msr.inak);
 }
 
 void can_transmit(uint32_t id, bool extended_id, size_t len, uint8_t *buf) {
@@ -72,11 +76,11 @@ void can_transmit(uint32_t id, bool extended_id, size_t len, uint8_t *buf) {
 	
 	/* ID */
 	if(extended_id) {
-		CAN.tx_mbox[mbox].tir.stid = id;
-		CAN.tx_mbox[mbox].tir.exid = 0;
-	} else {
 		CAN.tx_mbox[mbox].tir.stid = id >> 18;
 		CAN.tx_mbox[mbox].tir.exid = id;
+	} else {
+		CAN.tx_mbox[mbox].tir.stid = id;
+		CAN.tx_mbox[mbox].tir.exid = 0;
 	}
 	
 	CAN.tx_mbox[mbox].tir.ide = extended_id;
@@ -90,4 +94,73 @@ void can_transmit(uint32_t id, bool extended_id, size_t len, uint8_t *buf) {
 	
 	/* Request transmission of mailbox */
 	CAN.tx_mbox[mbox].tir.txrq = true;
+}
+
+int can_recv(uint8_t fifo, uint8_t *data, uint8_t *matched_filter, bool *extended_id, uint32_t *id, uint16_t *timestamp) {
+	uint8_t _matched_filter;
+	uint32_t _id;
+	bool _extended_id;
+	uint16_t _timestamp;
+	int len, i;
+	
+	if(fifo > 1)
+		return -1;
+	
+	/* Wait until old fifos properly released*/
+	while(CAN.rf[fifo].rfom);
+	/* Wait until message available */
+	while(CAN.rf[fifo].fmp == 0);
+	
+	/* ID */
+	_extended_id = CAN.rx_mbox[fifo].rir.ide;
+	if(_extended_id)
+		_id = CAN.rx_mbox[fifo].rir.reg >> 3;
+	else
+		_id = CAN.rx_mbox[fifo].rir.stid;
+	
+	if(extended_id)
+		*extended_id = _extended_id;
+	
+	if(id)
+		*id = _id;
+	
+	/* Filter */
+	_matched_filter = CAN.rx_mbox[fifo].rdtr.fmi;
+	if(matched_filter)
+		*matched_filter = _matched_filter;
+	
+	/* Data */
+	len = CAN.rx_mbox[fifo].rdtr.dlc;
+	
+	if(data) {
+		for(i = 0; i < len; i++)
+			data[i] = CAN.rx_mbox[fifo].data[i];
+	}
+	
+	/* Timestamp */
+	_timestamp = CAN.rx_mbox[fifo].rdtr.time;
+	if(timestamp)
+		*timestamp = _timestamp;
+	
+	/*Release FIFO*/
+	CAN.rf[fifo].rfom = true;
+	
+	return len;
+}
+
+int can_try_recv(uint8_t fifo, uint8_t *data, uint8_t *matched_filter, bool *extended_id, uint32_t *id, uint16_t *timestamp) {
+	if(fifo > 1)
+		return -1;
+	
+	/* Wait until old fifos properly released*/
+	while(CAN.rf[fifo].rfom);
+	
+	if(CAN.rf[fifo].fmp == 0)
+		return -1;
+	
+	return can_recv(fifo, data, matched_filter, extended_id, id, timestamp);
+}
+
+void can_set_filter(uint8_t fifo, uint32_t filter) {
+	
 }

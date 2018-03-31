@@ -272,7 +272,7 @@ struct STM32CAN {
 	struct {
 		uint32_t fr0;
 		uint32_t fr1;
-	} fifo[28];
+	} filter[28];
 };
 
 extern volatile STM32CAN CAN;
