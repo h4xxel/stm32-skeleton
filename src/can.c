@@ -46,6 +46,10 @@ void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
 	
 	CAN.fmr.finit = true;
 	CAN.fmr.can2sb = 1;
+	CAN.fa1r = 0x0;
+	free_filter_bank = 0;
+	filter_number[0] = 0;
+	filter_number[1] = 0;
 	
 	/* Set baudrate */
 	/*
