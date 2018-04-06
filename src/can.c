@@ -7,6 +7,9 @@
 #include <stm32/syscfg.h>
 #include <stm32/gpio.h>
 
+static int filter_number[2] = {0, 0};
+static int free_filter_bank = 0;
+
 void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
 	/* Enable GPIO and CAN */
 	RCC.ahb_enr.gpio_a_en = true;
@@ -40,6 +43,9 @@ void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
 	CAN.mcr.sleep = false;
 	while(!CAN.msr.inak);
 	while(CAN.msr.slak);
+	
+	CAN.fmr.finit = true;
+	CAN.fmr.can2sb = 1;
 	
 	/* Set baudrate */
 	/*
@@ -161,6 +167,64 @@ int can_try_recv(uint8_t fifo, uint8_t *data, uint8_t *matched_filter, bool *ext
 	return can_recv(fifo, data, matched_filter, extended_id, id, timestamp);
 }
 
-void can_set_filter(uint8_t fifo, uint32_t filter) {
+static void _set_filter(uint8_t filter, uint8_t fifo, uint32_t ident1, uint32_t ident2, bool extended_id, bool ident) {
+	//TODO: support 16 bit filters
 	
+	CAN.fmr.finit = true;
+	CAN.fa1r &= ~(1 << filter);
+	
+	if(ident) {
+		CAN.fm1r |= (1 << filter);
+	} else {
+		CAN.fm1r &= ~(1 << filter);
+	}
+	
+	CAN.fs1r |= (1 << filter);
+	
+	if(fifo == 0) {
+		CAN.ffa1r &= ~(1 << filter);
+	} else {
+		CAN.ffa1r |= (1 << filter);
+	}
+	
+	if(extended_id) {
+		CAN.filter[filter].fr0 = (ident1 << 21) | ((ident1 & 0x1FFFF800) >> 8) | (1 < 2);
+		CAN.filter[filter].fr1 = (ident2 << 21) | ((ident2 & 0x1FFFF800) >> 8) | (1 < 2);
+	} else {
+		CAN.filter[filter].fr0 = (ident1 << 21);
+		CAN.filter[filter].fr1 = (ident2 << 21);
+	}
+	
+	CAN.fa1r |= (1 << filter);
+	CAN.fmr.finit = false;
+}
+
+int can_set_filter_mask(uint8_t fifo, uint32_t mask, uint32_t ident, bool extended_id) {
+	int number;
+	
+	if(fifo > 1)
+		return -1;
+	
+	_set_filter(free_filter_bank, fifo, ident, mask, extended_id, true);
+	
+	number = filter_number[fifo];
+	filter_number[fifo]++;
+	
+	return number;
+}
+
+int can_set_filter_ident(uint8_t fifo, uint32_t ident1, uint32_t ident2, bool extended_id) {
+	int number;
+	
+	if(fifo > 1)
+		return -1;
+	
+	_set_filter(free_filter_bank, fifo, ident1, ident2, extended_id, true);
+	
+	number = filter_number[fifo];
+	filter_number[fifo] += 2;
+	
+	free_filter_bank++;
+	
+	return number;
 }

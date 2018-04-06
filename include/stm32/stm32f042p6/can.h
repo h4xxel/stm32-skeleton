@@ -258,6 +258,7 @@ struct STM32CAN {
 	
 	uint32_t pad1[12];
 	
+	STM32CanFilterMaster fmr;
 	uint32_t fm1r;
 	uint32_t pad2;
 	uint32_t fs1r;
