@@ -39,17 +39,19 @@ void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
 	while(CAN.mcr.reset);
 	
 	/* Set init mode */
-	CAN.mcr.inrq = true;
-	CAN.mcr.sleep = false;
+	//CAN.mcr.inrq = true;
+	//CAN.mcr.sleep = false;
+	CAN.mcr.reg = 0x1;
 	while(!CAN.msr.inak);
 	while(CAN.msr.slak);
 	
 	CAN.fmr.finit = true;
-	CAN.fmr.can2sb = 1;
-	CAN.fa1r = 0x0;
+	CAN.fmr.can2sb = 28;
+	
 	free_filter_bank = 0;
 	filter_number[0] = 0;
 	filter_number[1] = 0;
+	CAN.fmr.finit = false;
 	
 	/* Set baudrate */
 	/*
@@ -66,11 +68,11 @@ void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
 	CAN.btr.sjw = 2;
 	
 	/* Set normal mode */
-	CAN.mcr.inrq = true;
+	CAN.mcr.reg = 0x0;
 	while(CAN.msr.inak);
 }
 
-void can_transmit(uint32_t id, bool extended_id, size_t len, uint8_t *buf) {
+void can_send(uint32_t id, bool extended_id, size_t len, uint8_t *buf) {
 	int mbox;
 	uint8_t empty;
 	volatile uint8_t *to;
@@ -86,8 +88,8 @@ void can_transmit(uint32_t id, bool extended_id, size_t len, uint8_t *buf) {
 	
 	/* ID */
 	if(extended_id) {
-		CAN.tx_mbox[mbox].tir.stid = id >> 18;
-		CAN.tx_mbox[mbox].tir.exid = id;
+		CAN.tx_mbox[mbox].tir.stid = id;
+		CAN.tx_mbox[mbox].tir.exid = id >> 11;
 	} else {
 		CAN.tx_mbox[mbox].tir.stid = id;
 		CAN.tx_mbox[mbox].tir.exid = 0;
@@ -120,6 +122,7 @@ int can_recv(uint8_t fifo, uint8_t *data, uint8_t *matched_filter, bool *extende
 	while(CAN.rf[fifo].rfom);
 	/* Wait until message available */
 	while(CAN.rf[fifo].fmp == 0);
+	GPIOB.output.pin1 = 1;
 	
 	/* ID */
 	_extended_id = CAN.rx_mbox[fifo].rir.ide;
@@ -174,7 +177,7 @@ int can_try_recv(uint8_t fifo, uint8_t *data, uint8_t *matched_filter, bool *ext
 static void _set_filter(uint8_t filter, uint8_t fifo, uint32_t ident1, uint32_t ident2, bool extended_id, bool ident) {
 	//TODO: support 16 bit filters
 	
-	CAN.fmr.finit = true;
+	CAN.fmr.reg |= 0x1;
 	CAN.fa1r &= ~(1 << filter);
 	
 	if(ident) {
@@ -200,7 +203,7 @@ static void _set_filter(uint8_t filter, uint8_t fifo, uint32_t ident1, uint32_t 
 	}
 	
 	CAN.fa1r |= (1 << filter);
-	CAN.fmr.finit = false;
+	CAN.fmr.finit &= ~0x1;
 }
 
 int can_set_filter_mask(uint8_t fifo, uint32_t mask, uint32_t ident, bool extended_id) {
@@ -209,7 +212,7 @@ int can_set_filter_mask(uint8_t fifo, uint32_t mask, uint32_t ident, bool extend
 	if(fifo > 1)
 		return -1;
 	
-	_set_filter(free_filter_bank, fifo, ident, mask, extended_id, true);
+	_set_filter(free_filter_bank, fifo, ident, mask, extended_id, false);
 	
 	number = filter_number[fifo];
 	filter_number[fifo]++;
