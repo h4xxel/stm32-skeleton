@@ -8,7 +8,7 @@
 
 #include "can.h"
 
-#define SENDER
+//#define SENDER
 
 void delay(volatile uint32_t i) {
 	for(; i > 0; i--);
@@ -27,14 +27,19 @@ void setup_clock() {
 }
 
 int main() {
+	#ifdef SENDER
 	uint8_t data[] = "THE GAME";
+	#else
+	uint8_t data[] = "        ";
+	#endif
+	
 	setup_clock();
 	
 	GPIOB.output.pin1 = 0;
 	
 	RCC.ahb_enr.gpio_b_en = true;
 	GPIOB.mode.pin1 = STM32_GPIO_MODE_OUTPUT;
-	can_setup(5, 3, 2);
+	can_setup(47, 3, 2);
 	#ifndef SENDER
 	can_set_filter_ident(0, 0xBEEF, 0xBABE, true);
 	#endif
