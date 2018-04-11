@@ -229,7 +229,7 @@ struct STM32CanTxMbox {
 	STM32CanTxMboxDataLengthControlTimestamp tdtr;
 	//STM32CanMboxData tdlr;
 	//STM32CanMboxData tdhr;
-	uint8_t data[8];
+	uint32_t data[2];
 };
 
 typedef struct STM32CanRxMbox STM32CanRxMbox;

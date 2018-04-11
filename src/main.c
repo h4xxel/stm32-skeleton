@@ -8,6 +8,8 @@
 
 #include "can.h"
 
+#define SENDER
+
 void delay(volatile uint32_t i) {
 	for(; i > 0; i--);
 }
@@ -33,16 +35,26 @@ int main() {
 	RCC.ahb_enr.gpio_b_en = true;
 	GPIOB.mode.pin1 = STM32_GPIO_MODE_OUTPUT;
 	can_setup(5, 3, 2);
-	//can_set_filter_ident(0, 0xDEAD, 0xBEEF, true);
+	#ifndef SENDER
+	can_set_filter_ident(0, 0xBEEF, 0xBABE, true);
+	#endif
 	
 	for(;;) {
+		#ifdef SENDER
 		can_send(0xBEEF, true, 8, data);
-		//can_recv(0, data, NULL, NULL, NULL, NULL);
+		#else
+		can_recv(0, data, NULL, NULL, NULL, NULL);
+		#endif
 		GPIOB.output.pin1 = 1;
+		#ifdef SENDER
 		delay(1000000);
-		//can_recv(0, data, NULL, NULL, NULL, NULL);
+		#else
+		can_recv(0, data, NULL, NULL, NULL, NULL);
+		#endif
 		GPIOB.output.pin1 = 0;
+		#ifdef SENDER
 		delay(1000000);
+		#endif
 	}
 	
 	return 0;

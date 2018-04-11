@@ -11,6 +11,7 @@ static int filter_number[2] = {0, 0};
 static int free_filter_bank = 0;
 
 void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
+	int i;
 	/* Enable GPIO and CAN */
 	RCC.ahb_enr.gpio_a_en = true;
 	RCC.apb1_enr.can_en = true;
@@ -48,6 +49,12 @@ void can_setup(uint16_t baud_rate_prescale, uint8_t ts1, uint8_t ts2) {
 	CAN.fmr.finit = true;
 	CAN.fmr.can2sb = 28;
 	
+	CAN.fa1r = 0x0;
+	for(i = 0; i < 28; i++) {
+		CAN.filter[i].fr0 = 0;
+		CAN.filter[i].fr1 = 0;
+	}
+	
 	free_filter_bank = 0;
 	filter_number[0] = 0;
 	filter_number[1] = 0;
@@ -76,6 +83,7 @@ void can_send(uint32_t id, bool extended_id, size_t len, uint8_t *buf) {
 	int mbox;
 	uint8_t empty;
 	volatile uint8_t *to;
+	uint32_t dat[2] = {0, 0};
 	
 	if(len > 8)
 		return;
@@ -100,9 +108,11 @@ void can_send(uint32_t id, bool extended_id, size_t len, uint8_t *buf) {
 	
 	/* Data */
 	CAN.tx_mbox[mbox].tdtr.dlc = len;
-	to = CAN.tx_mbox[mbox].data;
+	to = (uint8_t *) &dat;
 	while(len--)
 		*to++ = *buf++;
+	CAN.tx_mbox[mbox].data[0] = dat[0];
+	CAN.tx_mbox[mbox].data[1] = dat[1];
 	
 	/* Request transmission of mailbox */
 	CAN.tx_mbox[mbox].tir.txrq = true;
@@ -122,7 +132,6 @@ int can_recv(uint8_t fifo, uint8_t *data, uint8_t *matched_filter, bool *extende
 	while(CAN.rf[fifo].rfom);
 	/* Wait until message available */
 	while(CAN.rf[fifo].fmp == 0);
-	GPIOB.output.pin1 = 1;
 	
 	/* ID */
 	_extended_id = CAN.rx_mbox[fifo].rir.ide;
@@ -195,8 +204,8 @@ static void _set_filter(uint8_t filter, uint8_t fifo, uint32_t ident1, uint32_t 
 	}
 	
 	if(extended_id) {
-		CAN.filter[filter].fr0 = (ident1 << 21) | ((ident1 & 0x1FFFF800) >> 8) | (1 < 2);
-		CAN.filter[filter].fr1 = (ident2 << 21) | ((ident2 & 0x1FFFF800) >> 8) | (1 < 2);
+		CAN.filter[filter].fr0 = (ident1 << 21) | ((ident1 & 0x1FFFF800) >> 8) | (1 << 2);
+		CAN.filter[filter].fr1 = (ident2 << 21) | ((ident2 & 0x1FFFF800) >> 8) | (1 << 2);
 	} else {
 		CAN.filter[filter].fr0 = (ident1 << 21);
 		CAN.filter[filter].fr1 = (ident2 << 21);
