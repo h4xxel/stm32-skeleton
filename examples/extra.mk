@@ -1,1 +1,1 @@
-LDFLAGS	+=	-s -lstm32
+LDFLAGS	+=	-static -lstm32
