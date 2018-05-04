@@ -1,7 +1,7 @@
 include $(TOPDIR)/common.mk
 
 #Name of the project
-NAME		=	project
+NAME		=	stm32
 
 #Installer can be STLINK, USB or UART
 INSTALLER	=	STLINK

@@ -21,7 +21,7 @@ BINFILE		=	$(NAME).bin
 HEXFILE		=	$(NAME).hex
 
 #General flags
-LDFLAGS		=	-L$(TOPDIR)/device -T$(LINKSCRIPT) -nostartfiles
+LDFLAGS		=	-L$(TOPDIR)/device -L$(TOPDIR) -T$(LINKSCRIPT) -nostartfiles
 CFLAGS		=	-D__NEWLIB__ -ffreestanding -I$(TOPDIR)/include \
 			-mcpu=$(CPUCORE) -mthumb -DDEVICE=$(DEVICE)
 CXXFLAGS	:=	$(CFLAGS)

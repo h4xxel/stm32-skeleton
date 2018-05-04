@@ -6,7 +6,7 @@
 #include <stm32/gpio.h>
 #include <stm32/can.h>
 
-#include "can.h"
+#include <stm32-lib/can.h>
 
 //#define SENDER
 

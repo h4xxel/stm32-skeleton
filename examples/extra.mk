@@ -1,0 +1,1 @@
+LDFLAGS	+=	-s -lstm32
