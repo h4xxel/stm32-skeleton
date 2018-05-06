@@ -10,9 +10,9 @@ CXX		=	$(TARGET)g++
 OBJCOPY		=	$(TARGET)objcopy
 OBJDUMP		=	$(TARGET)objdump
 
-INSTALL-UART	=	stm32loader -p $(TTYDEV) -e -w -v $(BINFILE)
-INSTALL-STLINK	=	st-flash --serial $(TTYDEV) --format ihex write $(HEXFILE)
-INSTALL-USB	=	dfu-util -a 0 -s 0x08000000 -D $(BINFILE)
+INSTALL-UART	=	stm32loader -p $(TTYDEV) -e -w -v $(@F).bin
+INSTALL-STLINK	=	st-flash --serial $(TTYDEV) --format ihex write $(@F).hex
+INSTALL-USB	=	dfu-util -a 0 -s 0x08000000 -D $(@F).bin
 DEBUGCMD	=	st-util
 
 #Binaries

@@ -7,16 +7,26 @@ SRCDIRS		=	src
 #MODULESDIR	=	submodules
 EXAMPLESDIR	=	examples
 
-SUBDIRS		=	$(SRCDIRS) $(PLUGINSDIR) $(MODULESDIR) $(EXAMPLESDIR)
+SUBDIRS		=	$(SRCDIRS) $(PLUGINSDIR) $(MODULESDIR)
 
 MODULES		=	$(wildcard $(addsuffix /*.a,$(MODULESDIR)))
 
 AFILE		=	lib$(NAME).a
 
-.PHONY: all clean install-uart install-stlink debug
+.PHONY: all clean install debug examples
 .PHONY: $(SUBDIRS)
 
-all: $(AFILE) $(EXAMPLESDIR)
+all: $(AFILE)
+	@echo 
+	@echo "Build complete."
+	@echo 
+
+examples:
+	@+make all
+	
+	@echo " [ CD ] $(CURRENTPATH)examples/"
+	@+make -C "$@" "CURRENTPATH=$(CURRENTPATH)examples/" all
+	@echo " [ CD ] $(CURRENTPATH)"
 	@echo 
 	@echo "Build complete."
 	@echo 
@@ -45,13 +55,8 @@ clean: $(SUBDIRS)
 	@echo "Source tree cleaned."
 	@echo
 
-install:
-	@echo " [INST] $(NAME)"
-	@$(INSTALL-$(INSTALLER))
-
 $(SUBDIRS):
 	@echo " [ CD ] $(CURRENTPATH)$@/"
 	@+make -C "$@" "CURRENTPATH=$(CURRENTPATH)$@/" $(MAKECMDGOALS)
 	@echo " [ CD ] $(CURRENTPATH)"
 
-$(EXAMPLESDIR): $(AFILE)

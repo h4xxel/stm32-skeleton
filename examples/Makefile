@@ -9,24 +9,32 @@ include $(TOPDIR)/config.mk
 
 # Sub directories to build
 SUBDIRS		=	$(patsubst %/,%,$(foreach subdir,$(wildcard */Makefile),$(dir $(subdir))))
-LIBFILES		=	$(addsuffix .elf,$(SUBDIRS))
+ELFFILES		=	$(addsuffix .elf,$(SUBDIRS))
 HEXFILES		=	$(addsuffix .hex,$(SUBDIRS))
+BINFILES		=	$(addsuffix .bin,$(SUBDIRS))
+
+INSTALLS		=	$(addprefix install/,$(SUBDIRS))
 
 .PHONY: all clean
-.PHONY: $(SUBDIRS)
+.PHONY: $(SUBDIRS) $(INSTALLS)
 .SUFFIXES:
 
-all: $(LIBFILES) $(HEXFILES)
-	@echo "Plugins build complete."
+all: $(ELFFILES) $(HEXFILES) $(BINFILES)
+	@echo 
+	@echo "Examples build complete."
 	@echo 
 
 clean: $(SUBDIRS)
-	@echo " [ RM ] $(LIBFILES) $(HEXFILES)"
-	@$(RM) $(LIBFILES) $(HEXFILES)
+	@echo " [ RM ] $(ELFFILES) $(HEXFILES) $(BINFILES)"
+	@$(RM) $(ELFFILES) $(HEXFILES) $(BINFILES)
 	
 	@echo
-	@echo "Plugins source tree cleaned."
+	@echo "Examples source tree cleaned."
 	@echo
+
+$(INSTALLS):
+	@echo " [INST] $(@F)"
+	@$(INSTALL-$(INSTALLER))
 
 $(SUBDIRS):
 	@echo " [ CD ] $(CURRENTPATH)$@/"
@@ -39,4 +47,8 @@ $(SUBDIRS):
 %.hex: %.elf
 	@echo " [OCPY] $@"
 	@$(OBJCOPY) -O ihex $< $@
+
+%.bin: %.elf
+	@echo " [OCPY] $@"
+	@$(OBJCOPY) -O binary $< $@
 
