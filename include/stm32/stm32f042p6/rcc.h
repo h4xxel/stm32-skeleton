@@ -127,10 +127,10 @@ union STM32RCCAPB1Reset {
 		
 		uint32_t : 2;
 		
-		uint32_t uart2_rst : 1;
-		uint32_t uart3_rst : 1;
-		uint32_t uart4_rst : 1;
-		uint32_t uart5_rst : 1;
+		uint32_t usart2_rst : 1;
+		uint32_t usart3_rst : 1;
+		uint32_t usart4_rst : 1;
+		uint32_t usart5_rst : 1;
 		
 		uint32_t i2c1_rst : 1;
 		uint32_t i2c2_rst : 1;
@@ -231,10 +231,10 @@ union STM32RCCAPB1Enable {
 		
 		uint32_t : 2;
 		
-		uint32_t uart2_en : 1;
-		uint32_t uart3_en : 1;
-		uint32_t uart4_en : 1;
-		uint32_t uart5_en : 1;
+		uint32_t usart2_en : 1;
+		uint32_t usart3_en : 1;
+		uint32_t usart4_en : 1;
+		uint32_t usart5_en : 1;
 		
 		uint32_t i2c1_en : 1;
 		uint32_t i2c2_en : 1;
