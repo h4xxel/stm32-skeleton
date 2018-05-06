@@ -43,6 +43,10 @@ int main() {
 	RCC.ahb_enr.gpio_a_en = true;
 	RCC.apb1_enr.usart2_en = true;
 	
+	GPIOA.mode.pin2 = STM32_GPIO_MODE_ALT_FUNC;
+	GPIOA.mode.pin3 = STM32_GPIO_MODE_ALT_FUNC;
+	GPIOA.alt_func_low.pin2 = 0x1;
+	GPIOA.alt_func_low.pin3 = 0x1;
 	
 	USART2.brr.brr = 417;
 	USART2.cr1.ue = true;
