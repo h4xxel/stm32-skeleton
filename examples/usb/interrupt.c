@@ -3,6 +3,8 @@
 #include <stm32/interrupts.h>
 #include <stm32/exceptions.h>
 
+#include "usb.h"
+
 void _start();
 extern uint32_t __stack_end__;
 
@@ -61,5 +63,5 @@ void (* const __interrupts[INTERRUPTS])(void)  __attribute__ ((section(".interru
 	[INTERRUPT_USART2] = unhandled_irq,
 	[INTERRUPT_USART3_4_5_6_7_8] = unhandled_irq,
 	[INTERRUPT_CEC_CAN] = unhandled_irq,
-	[INTERRUPT_USB] = unhandled_irq,
+	[INTERRUPT_USB] = isr_usb,
 };

@@ -4,6 +4,10 @@
 
 #include <stm32/rcc.h>
 #include <stm32/gpio.h>
+#include <stm32/syscfg.h>
+#include <stm32/usb.h>
+
+#include "usb.h"
 
 void delay(volatile uint32_t i) {
 	for(; i > 0; i--);
@@ -22,18 +26,17 @@ void setup_clock() {
 }
 
 int main() {
-	int i;
 	setup_clock();
 	
 	RCC.ahb_enr.gpio_b_en = true;
 	GPIOB.mode.pin1 = STM32_GPIO_MODE_OUTPUT;
 	GPIOB.output.pin1 = 0;
 	
+	usb_init();
+	
 	delay(10000);
-	USB.bcdr.dppu = true;
-
-	while(USB.istr.reg == 0);
-	GPIOB.output.pin1 = 1;
+	
+	usb_enable();
 	
 	for(;;);
 	
