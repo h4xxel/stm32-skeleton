@@ -25,21 +25,17 @@ int main() {
 	int i;
 	setup_clock();
 	
-	RCC.ahb_enr.gpio_a_en = true;
-	GPIOA.output.pin4 = 0;
+	RCC.ahb_enr.gpio_b_en = true;
+	GPIOB.mode.pin1 = STM32_GPIO_MODE_OUTPUT;
+	GPIOB.output.pin1 = 0;
 	
-	GPIOA.mode.pin4 = STM32_GPIO_MODE_OUTPUT;
+	delay(10000);
+	USB.bcdr.dppu = true;
+
+	while(USB.istr.reg == 0);
+	GPIOB.output.pin1 = 1;
 	
-	for(;;) {
-		for(i = 0; i < 20; i++) {
-			GPIOA.output.pin4 = 0x1;
-			delay(51);
-			GPIOA.output.pin4 = 0x0;
-			delay(51);
-		}
-		
-		delay(100000);
-	}
+	for(;;);
 	
 	return 0;
 }
