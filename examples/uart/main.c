@@ -5,6 +5,27 @@
 #include <stm32/rcc.h>
 #include <stm32/gpio.h>
 #include <stm32/usart.h>
+#include <stm32/can.h>
+
+#include <stm32-lib/can.h>
+
+/* Convert 8.8 bit fixed point to string representation*/
+char *uint_to_string(uint16_t num) {
+	uint32_t n;
+	char *tmp;
+	static char buf[10];
+	
+	n = num;
+	tmp = buf + 8;
+	*tmp = 0;
+	do {
+		*--tmp = (n  % 10) + '0';
+		n /= 10;
+	} while(n);
+	
+	return tmp;
+}
+
 
 void delay(volatile uint32_t i) {
 	for(; i > 0; i--);
@@ -35,9 +56,12 @@ uint8_t uart_getc() {
 void uart_puts(char *s) {
 	for(; *s; s++)
 		uart_putc((uint8_t) *s);
+	
+	uart_putc('\n');
 }
 
 int main() {
+	uint8_t data[] = "        ";
 	setup_clock();
 	
 	RCC.ahb_enr.gpio_a_en = true;
@@ -53,9 +77,12 @@ int main() {
 	USART2.cr1.te = true;
 	USART2.cr1.re = true;
 	
+	can_setup(47, 3, 2);
+	can_set_filter_ident(0, 0xBEEF, 0xBABE, true);
+	
 	for(;;) {
-		uart_puts("arne\r\n");
-		delay(1000000);
+		can_recv(0, data, NULL, NULL, NULL, NULL);
+		uart_puts(uint_to_string(*((uint16_t *) &data)));
 	}
 	
 	return 0;

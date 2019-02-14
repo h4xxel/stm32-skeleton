@@ -4,7 +4,7 @@ include $(TOPDIR)/common.mk
 NAME		=	stm32
 
 #Installer can be STLINK, USB or UART
-INSTALLER	=	USB
+INSTALLER	=	STLINK
 
 #Serial device for programming
 TTYDEV		?=	/dev/ttyUSB0

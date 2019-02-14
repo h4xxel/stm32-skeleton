@@ -81,6 +81,8 @@ void usb_enable() {
 void isr_usb() {
 	int endpoint;
 	
+	GPIOB.output.pin1 = 1;
+	
 	if(!USB.istr.reg)
 		return;
 	
@@ -101,7 +103,10 @@ void isr_usb() {
 		/* Correct transfer */
 		GPIOB.output.pin1 = 1;
 		endpoint = USB.istr.ep_id;
-		USB_INTERRUPT_FLAG_CLEAR(STM32_USB_INTERRUPT_FLAG_BIT_CTR);
+		
+		USB.endpoint[endpoint].reg = 0x0;
+		
+		//USB_INTERRUPT_FLAG_CLEAR(STM32_USB_INTERRUPT_FLAG_BIT_CTR);
 		return;
 	}
 }

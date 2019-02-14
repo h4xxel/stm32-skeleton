@@ -48,7 +48,7 @@ union STM32ADCConfiguration1 {
 		uint32_t dmaen : 1;
 		uint32_t dmacfg : 1;
 		uint32_t scandir : 1;
-		uint32_t : 2;
+		uint32_t res : 2;
 		uint32_t align : 1;
 		uint32_t extsel : 3;
 		uint32_t : 1;
@@ -128,7 +128,7 @@ union STM32ADCCommonConfiguration {
 	struct {
 		uint32_t : 22;
 		uint32_t vref_en : 1;
-		uint32_t ts_en : ;
+		uint32_t ts_en : 1;
 		uint32_t vbat_en : 1;
 	};
 };
