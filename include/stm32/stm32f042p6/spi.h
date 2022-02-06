@@ -57,8 +57,8 @@ union STM32SpiSR {
 		uint32_t ovr : 1;
 		uint32_t bsy : 1;
 		uint32_t fre : 1;
-		uint32_t frvl : 2;
-		uint32_t ftvl : 2;
+		uint32_t frlvl : 2;
+		uint32_t ftlvl : 2;
 		uint32_t : 3;
 		uint32_t : 16;
 	};
@@ -82,7 +82,7 @@ union STM32SpiCRCPR {
 	};
 };
 
-typedef union STM32SpiRxCRC STM32SpiRxCRCR;
+typedef union STM32SpiRxCRCR STM32SpiRxCRCR;
 union STM32SpiRxCRCR {
 	uint32_t reg;
 	struct {
@@ -100,8 +100,8 @@ union STM32SpiTxCRCR {
 	};
 };
 
-typedef struct STM32USART STM32USART;
-struct STM32USART {
+typedef struct STM32SPI STM32SPI;
+struct STM32SPI {
 	STM32SpiCR1 cr1;
 	STM32SpiCR2 cr2;
 	STM32SpiSR sr;
@@ -111,13 +111,6 @@ struct STM32USART {
 	STM32SpiTxCRCR txcrcr;
 };
 
-extern volatile STM32USART USART1;
-extern volatile STM32USART USART2;
-extern volatile STM32USART USART3;
-extern volatile STM32USART USART4;
-extern volatile STM32USART USART5;
-extern volatile STM32USART USART6;
-extern volatile STM32USART USART7;
-extern volatile STM32USART USART8;
+extern volatile STM32SPI SPI1;
 
 #endif
