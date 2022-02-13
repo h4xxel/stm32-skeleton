@@ -67,10 +67,8 @@ union STM32SpiSR {
 typedef union STM32SpiDR STM32SpiDR;
 union STM32SpiDR {
 	uint32_t reg;
-	struct {
-		uint32_t dr : 16;
-		uint32_t : 16;
-	};
+	uint8_t dr8;
+	uint16_t dr16;
 };
 
 typedef union STM32SpiCRCPR STM32SpiCRCPR;
